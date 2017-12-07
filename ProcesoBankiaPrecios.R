@@ -252,7 +252,7 @@ ACTPOS_Anterior[,2] <- gsub(" ","",ACTPOS_Anterior[,2])
 ACTPOS_Anterior <- ACTPOS_Anterior[,1:2]
 colnames( ACTPOS_Anterior ) <- c("Codigo Interno", "ISIN")
 setdiff(ACTPOS$ISIN,ACTPOS_Anterior$ISIN) # los que han entrado "LU0650148827" "LU0650147852" "LU0329573587" "LU0273157635" "LU0144644332"
-setdiff(ACTPOS_Anterior$ISIN,ACTPOS$ISIN) # los que han salido "US69343P1057" "XS1531330774" "LU0390137031" "LU0309468808" "LU0255978776" "LU0190162189" "LU0010009420" "ES0133443152" "BRVALEACNPA3"
+setdiff(ACTPOS_Anterior$ISIN,ACTPOS$ISIN) # los que han salido  "US69343P1057" "XS1531330774" "LU0390137031" "LU0309468808" "LU0255978776" "LU0190162189" "LU0010009420" "ES0133443152" "BRVALEACNPA3"
 
 # junto con los historicos
 
@@ -261,7 +261,30 @@ colnames(Histo)[4:ncol((Histo))] <-as.character( as.Date( as.numeric(colnames(Hi
 Histo$ISIN <- gsub(" ","",Histo$ISIN)
 setorder(Histo, ISIN)
 
-merge.data.frame(ACTPOS, Histo[,3:ncol(Histo)], by = "ISIN", all.x = T) -> TablaCarga
+# carga Calendario de la bolsa espa?ola 
+CalendarioESP <- c();j<-1
+for(i in 1:465){
+    if( (format( FechaHoy-i+1, format = "%A") == "Saturday") || (format( FechaHoy-i+1, format = "%A") == "Sunday") || length(which(FechaHoy-i+1 == Festivos$fecha)) > 0 ){next}else{
+        CalendarioESP[j] <- FechaHoy-i+1
+        j <- j +1 
+    }
+}
+CalendarioESP <- as.Date(CalendarioESP, origin = "1970-01-01")
+
+# junto las tablas del actpos e historicos para tener la tabla carga, y agrego las fechas nuevas que no estan en el historico
+ColumnsNuevas <-  which(as.character(CalendarioESP) %in% colnames(Histo)[4])-2
+merge.data.frame(ACTPOS$ISIN, Histo[,3:ncol(Histo)], by = "ISIN", all.x = T) -> TablaCarga 
+for(i in 1:ColumnsNuevas){
+    TablaCarga[,ncol(TablaCarga)+1]<-NA
+    TablaCarga <- TablaCarga[,c(1,2,ncol(TablaCarga),3:ncol(TablaCarga)-1)]
+}
+
+
+colnames( T_Maestra )[8:(251+8)] <- if(format(FechaHoy,"%A")=="Saturday"){as.character(CalendarioESP[1:252])}else{as.character(CalendarioESP[2:253])} # <---------- ejec sabado ----
+
+
+
+
 
 TablaCarga[,c(2,1,3:ncol(TablaCarga))] -> TablaCarga
 
@@ -552,6 +575,16 @@ VLP_Hco[which(VLP_Hco$ISIN %in% c("ES0105578035",
 "ES0159178039",
 "ES0171888037",
 "ES0185373034")),3] 
+
+ACTPOS[which(ACTPOS$ISIN %in% c("500010",
+"500045",
+"500046",
+"500151",
+"500186",
+"500188",
+"500196",
+"500405",
+"500407")),] 
 
 
 # Carga en tabla
