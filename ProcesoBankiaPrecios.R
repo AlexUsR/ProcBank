@@ -246,6 +246,12 @@ colnames( ACTPOS ) <- c("Codigo Interno", "ISIN")
 
 # Comparo con ACTPOS anteriores para ver que ha salido y que ha entrado
 
+ACTPOS_Anterior   <-   read.csv2(file = paste0("R:/RIESGOS/Procesos_Automaticos_Bankia/HistoricosFTP/ACTPOS/ACTPOS_F",format(Sys.Date()-6,"%Y%m%d"),".TXT"), sep = ";", header = FALSE, stringsAsFactors = F)
+ACTPOS_Anterior[,1] <- gsub(" ","",ACTPOS_Anterior[,1])
+ACTPOS_Anterior[,2] <- gsub(" ","",ACTPOS_Anterior[,2])
+ACTPOS_Anterior <- ACTPOS_Anterior[,1:2]
+colnames( ACTPOS_Anterior ) <- c("Codigo Interno", "ISIN")
+setdiff(ACTPOS$ISIN,ACTPOS_Anterior$ISIN)
 
 
 T_Anterior <-  openxlsx::read.xlsx(xlsxFile = "R:/RIESGOS/Procesos_Automaticos_Bankia/Inputs/Hco_ACTPOS.xlsx", sheet = "Casos", startRow = 1, colNames = TRUE,
