@@ -251,8 +251,8 @@ ACTPOS_Anterior[,1] <- gsub(" ","",ACTPOS_Anterior[,1])
 ACTPOS_Anterior[,2] <- gsub(" ","",ACTPOS_Anterior[,2])
 ACTPOS_Anterior <- ACTPOS_Anterior[,1:2]
 colnames( ACTPOS_Anterior ) <- c("Codigo Interno", "ISIN")
-setdiff(ACTPOS$ISIN,ACTPOS_Anterior$ISIN)
-
+setdiff(ACTPOS$ISIN,ACTPOS_Anterior$ISIN) # los que han entrado "LU0650148827" "LU0650147852" "LU0329573587" "LU0273157635" "LU0144644332"
+setdiff(ACTPOS_Anterior$ISIN,ACTPOS$ISIN) # los que han salido "US69343P1057" "XS1531330774" "LU0390137031" "LU0309468808" "LU0255978776" "LU0190162189" "LU0010009420" "ES0133443152" "BRVALEACNPA3"
 
 T_Anterior <-  openxlsx::read.xlsx(xlsxFile = "R:/RIESGOS/Procesos_Automaticos_Bankia/Inputs/Hco_ACTPOS.xlsx", sheet = "Casos", startRow = 1, colNames = TRUE,
                                    rowNames = FALSE, detectDates = FALSE, skipEmptyRows = TRUE,
