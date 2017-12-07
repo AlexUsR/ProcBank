@@ -254,6 +254,19 @@ colnames( ACTPOS_Anterior ) <- c("Codigo Interno", "ISIN")
 setdiff(ACTPOS$ISIN,ACTPOS_Anterior$ISIN) # los que han entrado "LU0650148827" "LU0650147852" "LU0329573587" "LU0273157635" "LU0144644332"
 setdiff(ACTPOS_Anterior$ISIN,ACTPOS$ISIN) # los que han salido "US69343P1057" "XS1531330774" "LU0390137031" "LU0309468808" "LU0255978776" "LU0190162189" "LU0010009420" "ES0133443152" "BRVALEACNPA3"
 
+# junto con los historicos
+
+Histo  <- openxlsx::read.xlsx(xlsxFile = paste0("R:/RIESGOS/Procesos_Automaticos_Bankia/HISTNOESIS 30112017.xlsx"), colNames = T, rowNames = F)
+colnames(Histo)[4:ncol((Histo))] <-as.character( as.Date( as.numeric(colnames(Histo)[4:ncol((Histo))] ) , origin = "1899-12-30") )
+Histo$ISIN <- gsub(" ","",Histo$ISIN)
+setorder(Histo, ISIN)
+
+merge.data.frame(ACTPOS, Histo[,3:ncol(Histo)], by = "ISIN", all.x = T) -> TablaCarga
+
+TablaCarga[,c(2,1,3:ncol(TablaCarga))] -> TablaCarga
+
+
+
 T_Anterior <-  openxlsx::read.xlsx(xlsxFile = "R:/RIESGOS/Procesos_Automaticos_Bankia/Inputs/Hco_ACTPOS.xlsx", sheet = "Casos", startRow = 1, colNames = TRUE,
                                    rowNames = FALSE, detectDates = FALSE, skipEmptyRows = TRUE,
                                    skipEmptyCols = TRUE, rows = NULL, cols = NULL, check.names = FALSE)
