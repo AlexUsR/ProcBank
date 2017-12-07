@@ -1,16 +1,16 @@
 
 # ################################################################################################ #
-# ################# Optimización de procesos de análisis de riesgos para Bankia ################## #
+# ################# Optimizaci?n de procesos de an?lisis de riesgos para Bankia ################## #
 # ################################################################################################ #
 # Autor: Alejandro Pedraza. Para NoesisAF, Madrid. Contacto: Alejandro.Pedraza@noesis.es
 # Requiere Rtools instalado para funcionar!!! https://cran.r-project.org/bin/windows/Rtools/
-# Este proceso utiliza la agenda de la base de datos de Killarney para obtener los festivos de la bolsa española por lo que esta tabla ha de estar actualizada
+# Este proceso utiliza la agenda de la base de datos de Killarney para obtener los festivos de la bolsa espa?ola por lo que esta tabla ha de estar actualizada
 # Este proceso utiliza la tabla de divisas de la base de datos de Killarney para obtener el historico de los tipos de cambio
 
 # Datos del cliente en el FTP  en NAFUSER11:  ACTPOS_FYYYYMMDD, 
 # Datos nuestros: R:/Riesgos
 
-# ######### Librerías, rutas y funciones #### 
+# ######### Librer?as, rutas y funciones #### 
 rm(list=ls())
 FechaHoy <- Sys.Date()
 
@@ -58,7 +58,7 @@ CruceProxy <- function( TablaP = FiltroProxy ){
     for(ii in 1:length(Datos)){
         T_Dats[[ii]] <- bdh(Datos[ii],"PX_LAST", Sys.Date()-385,Sys.Date() )
         names(T_Dats)[[ii]] <- Datos[ii]
-        if ( nrow(T_Dats[[ii]]) == 0 ){ # añade index si no estaba ya
+        if ( nrow(T_Dats[[ii]]) == 0 ){ # a?ade index si no estaba ya
             Datos[ii]<-paste0(Datos[ii]," Index")
             T_Dats[[ii]] <- bdh(Datos[ii],"PX_LAST", Sys.Date()-385,Sys.Date() )
         }
@@ -129,14 +129,14 @@ zeroPad <- function(x, L=9, R =8 ){
     PosPunt <- gregexpr(pattern = "\\.",x)[[1]][1]
     if(PosPunt == -1 ){x <- paste0(x,".")}
     PosPunt <- gregexpr(pattern = "\\.",x)[[1]][1]
-    Tamaño  <- nchar(x)
+    Tama?o  <- nchar(x)
     num.zeros<-L-PosPunt+1
-    if( ( (Tamaño-PosPunt) > R ) ){
+    if( ( (Tama?o-PosPunt) > R ) ){
         x<-substr(x, 1, PosPunt + R)
-        Tamaño  <- nchar(x)
+        Tama?o  <- nchar(x)
     }
     x <- paste0(paste(rep(" ", num.zeros), collapse = ""), x) # lado izq del punto
-    num.zeros<-R-Tamaño+PosPunt
+    num.zeros<-R-Tama?o+PosPunt
     x <- paste0(x, paste(rep("0", num.zeros), collapse = ""))
     return(x)
 } 
@@ -148,7 +148,7 @@ new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"
 if(length(new.packages)) install.packages(new.packages)
 lapply(list.of.packages, require, character.only = TRUE)  
 Sys.setenv("R_ZIPCMD" = "C:/Rtools/bin/zip.exe") # Para openxlsx 
-Sys.setlocale("LC_TIME","C")  # Sys.setlocale("LC_TIME","Spanish_Spain.1252") # Para calendario, días en inglés 
+Sys.setlocale("LC_TIME","C")  # Sys.setlocale("LC_TIME","Spanish_Spain.1252") # Para calendario, d?as en ingl?s 
 options("scipen"=100, "digits"=7) # normalmente 0 y 7 respectivamente
 
 # bloomberg connection
@@ -178,9 +178,9 @@ FeedsBankiaVamp$Isin <- toupper( (FeedsBankiaVamp$Isin) )
 
 # FTP ----
 
-# Dirección: descargas.noesis.es
+# Direcci?n: descargas.noesis.es
 # Usuario: nafuserdev
-# Contraseña: ecceh0m0rR!    # tb BN
+# Contrase?a: ecceh0m0rR!    # tb BN
 # Ruta: /widgets/apps/Ichimoku
 
 # User <- "Nafuser11"
@@ -196,7 +196,7 @@ FicherosFTP <- getURL(url= paste0("ftp://",User,":",Password,"@",FTPServer,"/",R
                       ftp.use.epsv = T,dirlistonly = TRUE) 
 FicherosFTP <- paste(strsplit( FicherosFTP, "\r*\n")[[1]], sep = "")
 
-# primero guardamos una copia de los archivos del ftp. De todos menos de duracion, porque ocupa mucho y no se utiliza. Los precios tampoco, así que habrá que limpiar de vez en cnd
+# primero guardamos una copia de los archivos del ftp. De todos menos de duracion, porque ocupa mucho y no se utiliza. Los precios tampoco, as? que habr? que limpiar de vez en cnd
 Archivo_PRECIOS<- paste0("F_PRECIOS_F",format(FechaHoy-1,format="%Y%m%d"),".TXT") # rutas ultimos archivos del ftp, precios no se usa
 Archivo_PARAM  <- paste0("F_PARAM_F",   format(FechaHoy-1,format="%Y%m%d"),".TXT")
 Archivo_Altae  <- paste0("carteras_altae.txt")
@@ -244,16 +244,20 @@ ACTPOS[,2] <- gsub(" ","",ACTPOS[,2])
 ACTPOS <- ACTPOS[,1:2]
 colnames( ACTPOS ) <- c("Codigo Interno", "ISIN")
 
+# Comparo con ACTPOS anteriores para ver que ha salido y que ha entrado
+
+
+
 T_Anterior <-  openxlsx::read.xlsx(xlsxFile = "R:/RIESGOS/Procesos_Automaticos_Bankia/Inputs/Hco_ACTPOS.xlsx", sheet = "Casos", startRow = 1, colNames = TRUE,
                                    rowNames = FALSE, detectDates = FALSE, skipEmptyRows = TRUE,
                                    skipEmptyCols = TRUE, rows = NULL, cols = NULL, check.names = FALSE)
 T_Maestra <- merge.data.frame( ACTPOS , 
                                T_Anterior[,1:7 ], by = "ISIN", all.x = TRUE) 
-T_Maestra <- T_Maestra[!duplicated(T_Maestra$ISIN),c("ISIN","CodB","Nombre/descripción", "Caso","Nombre_Altae_Final", "Div","UltPrecio")]
+T_Maestra <- T_Maestra[!duplicated(T_Maestra$ISIN),c("ISIN","CodB","Nombre/descripci?n", "Caso","Nombre_Altae_Final", "Div","UltPrecio")]
 for(i in 8:(252+8)){
     T_Maestra[1,i] <-NA
 }
-# carga Calendario de la bolsa española 
+# carga Calendario de la bolsa espa?ola 
 CalendarioESP <- c();j<-1
 for(i in 1:465){
     if( (format( FechaHoy-i+1, format = "%A") == "Saturday") || (format( FechaHoy-i+1, format = "%A") == "Sunday") || length(which(FechaHoy-i+1 == Festivos$fecha)) > 0 ){next}else{
@@ -375,7 +379,7 @@ Histo30nov  <- openxlsx::read.xlsx(xlsxFile = paste0("R:/RIESGOS/Procesos_Automa
 colnames(Histo30nov)[4:ncol((Histo30nov))] <-as.character( as.Date( as.numeric(colnames(Histo30nov)[4:ncol((Histo30nov))] ) , origin = "1899-12-30") )
 Histo30nov$ISIN <- gsub(" ","",Histo30nov$ISIN)
 
-# Del Histórico a nuestra tabla del ACTPOS
+# Del Hist?rico a nuestra tabla del ACTPOS
 for(i in 1:2377){ # VLP a HistMArta
     for(j in 8:(ncol(Tab))){
         if( length( which( colnames(Histo30nov) %in% colnames(Tab)[j] ) ) == 1 ){ 
@@ -475,15 +479,15 @@ for(i in 1:nrow(Tab)){
 VLP_Hco <- openxlsx::read.xlsx("R:/RIESGOS/Procesos_Automaticos_Bankia/HistoricosFTP/VLP/VLP_Hco.xlsx", colNames = T, rowNames = F)
 # Coger archivo de hoy y cargarlo al historico. Tambien guarda copia del txt por si acaso
 VLP_temp <- read.csv2(file = paste0("ftp://",User,":",Password,"@",FTPServer,"/",Ruta,"VLPs/F_VLP_NOESIS",""), sep = ";", header = FALSE, stringsAsFactors = FALSE)
-write.table(  VLP_temp  , file= paste0("R:/RIESGOS/Procesos_Automaticos_Bankia/HistoricosFTP/VLP/histórico VLPs/",format(Sys.Date(),"%Y%m%d")," F_VLP_NOESIS.txt") , col.names = FALSE , row.names = FALSE , sep = ";" , quote = FALSE)
+write.table(  VLP_temp  , file= paste0("R:/RIESGOS/Procesos_Automaticos_Bankia/HistoricosFTP/VLP/hist?rico VLPs/",format(Sys.Date(),"%Y%m%d")," F_VLP_NOESIS.txt") , col.names = FALSE , row.names = FALSE , sep = ";" , quote = FALSE)
 fechas <- as.Date( unique( VLP_temp$V1 ), format = "%d/%m/%Y")
-for(i in 1:length(fechas)){ # añado nuevas fechas
+for(i in 1:length(fechas)){ # a?ado nuevas fechas
     if( !( as.character(fechas[i]) %in% colnames(VLP_Hco) ) ){
         VLP_Hco[1,length(VLP_Hco)+1]<- NA
         colnames(VLP_Hco)[length(VLP_Hco)] <- as.character(fechas[i])
     }
 }
-Nuevos_IsinsVLP <- setdiff(unique(VLP_temp$V2),unique(VLP_Hco$ISIN)) #  si nuevo ISIN, hay que añadirlo
+Nuevos_IsinsVLP <- setdiff(unique(VLP_temp$V2),unique(VLP_Hco$ISIN)) #  si nuevo ISIN, hay que a?adirlo
 if( length( Nuevos_IsinsVLP ) > 0 ){
     for(i in 1:length(Nuevos_IsinsVLP)){
         VLP_Hco[nrow(VLP_Hco)+1,] <- NA
@@ -498,7 +502,7 @@ for(i in 1:nrow(VLP_temp)){ # cargo datos
     }
 }
 # LimpiaNAs(Tabla = VLP_Hco) -> VLP_Hco
-# para añadir historico de nuevos
+# para a?adir historico de nuevos
 # temp <- openxlsx::read.xlsx("L:/AlejandroP/Mapeo.xlsx", colNames = T, rowNames = F, detectDates = T)
 # temp[,c(5,3,4)] -> temp
 # for(i in 1:nrow(temp)){
@@ -528,7 +532,7 @@ Altae  <- read.csv2(file = paste0("ftp://",User,":",Password,"@",FTPServer,"/",R
 UltCierre <- as.Date(Altae[1,2],format="%d.%m.%Y")
 ISINs_Altae <- (( unique(Altae$V4)[2:length(unique(Altae$V4))] ))
 ISINs_Altae <- ISINs_Altae[!(grepl("NULL",ISINs_Altae))] 
-ISINs_Altae <- ISINs_Altae[ which(as.numeric(ISINs_Altae[1:30]) > 500000)[1] : length(ISINs_Altae)] # Posición del primer numero mayor que 500000
+ISINs_Altae <- ISINs_Altae[ which(as.numeric(ISINs_Altae[1:30]) > 500000)[1] : length(ISINs_Altae)] # Posici?n del primer numero mayor que 500000
 Altae <- unique(Altae[Altae$V4 %in% ISINs_Altae,c("V4","V8","V13","V14")], by = c("V4"))
 Altae <- Altae[!duplicated(Altae$V4),]
 Altae <- Altae[order(Altae$V4),]
@@ -559,7 +563,7 @@ ProxyT <- openxlsx::read.xlsx(xlsxFile = "R:/RIESGOS/ALTAE/Bkia Noesis MAPPING+V
                               rowNames = FALSE, detectDates = FALSE, skipEmptyRows = TRUE,
                               skipEmptyCols = TRUE, rows = NULL, cols = NULL, check.names = FALSE)
 
-# Esta tabla se va a modificar para añadir fecha pivote y codigo BN. La tabla se construye de la siguiente manera
+# Esta tabla se va a modificar para a?adir fecha pivote y codigo BN. La tabla se construye de la siguiente manera
 Tab[ is.na(Tab[,255]) & !is.na(Tab[,155]) ,] -> FiltroProxy # <------- mejor forma contando blanks ----
 NA -> FiltroProxy[,ncol(FiltroProxy)+1]
 colnames(FiltroProxy)[ncol(FiltroProxy)] <- "FechaProxy"
@@ -612,9 +616,9 @@ CodsB <- CodsB[!duplicated(CodsB$ISIN),]
 
 
 # + HistoricoAltaeFinal Lectura historico carteras ----
-# para comprobar que ACTPOS respecto de la cartera esta  actualizado pasado un día
-# el que usamos nosotros, pestaña NuevoHist
-Ruta_Excel_Datos <- "R:/RIESGOS/ALTAE/HistoricoAltaeFinal.xlsm" # el que usamos nosotros, pestaña NuevoHist
+# para comprobar que ACTPOS respecto de la cartera esta  actualizado pasado un d?a
+# el que usamos nosotros, pesta?a NuevoHist
+Ruta_Excel_Datos <- "R:/RIESGOS/ALTAE/HistoricoAltaeFinal.xlsm" # el que usamos nosotros, pesta?a NuevoHist
 Hist <- openxlsx::read.xlsx(xlsxFile = Ruta_Excel_Datos, sheet = "NuevoHist", startRow = 1, colNames = TRUE,
                             rowNames = FALSE, detectDates = FALSE, skipEmptyRows = TRUE,
                             skipEmptyCols = TRUE, rows = NULL, cols = NULL, check.names = FALSE)
@@ -674,15 +678,15 @@ for(i in 1:nrow(T_Maestra)){# i <- 1
         }
     }
     # l <- 9
-    # for(k in 1:( nrow(Carga) ) ){# k recorro carga, l es posicion teorica del siguiente dato, sirve para ajustar los dias que son festivos en la bolsa correspondiente pero laboral en España
-    #     if(  length( 5+which(  Carga[k,1] == as.Date(colnames(T_Maestra)[6:length(T_Maestra)]) ) ) == 0 ){ # no hay match porque fue festivo en España y no en el pais de la accion, por tanto es como si ...[k]<l, me lo salto
+    # for(k in 1:( nrow(Carga) ) ){# k recorro carga, l es posicion teorica del siguiente dato, sirve para ajustar los dias que son festivos en la bolsa correspondiente pero laboral en Espa?a
+    #     if(  length( 5+which(  Carga[k,1] == as.Date(colnames(T_Maestra)[6:length(T_Maestra)]) ) ) == 0 ){ # no hay match porque fue festivo en Espa?a y no en el pais de la accion, por tanto es como si ...[k]<l, me lo salto
     #         l <- l + 1
     #     }else if( (5+ which(  Carga[k,1] == as.Date(colnames(T_Maestra)[6:length(T_Maestra)]) )) == l ){ # coinciden calendarios, lo normal
     #     # system.time( replicate(10000, for(k in 1:nrow(Carga)){ match(  Carga[k,1], as.Date(colnames(T_Maestra)[6:250]) )    } ))
     #         T_Maestra[i, l] <-  Carga[k, 2]
     #         l <- l + 1
     #     }else if( (5+ which(  Carga[k,1] == as.Date(colnames(T_Maestra)[6:length(T_Maestra)]) )) > l ){ # ...[k] > l (ha habido un Festivo USA y no ESP)   alternativa con match--> ( length(which( Carga[k,1] == as.Date(colnames(T_Maestra)[6:250]) )) > 0 )
-    #         # en este caso, además de cargar el dato correspondiente, hay que cargar el dato (o datos) anterior con el dato del dia de antes
+    #         # en este caso, adem?s de cargar el dato correspondiente, hay que cargar el dato (o datos) anterior con el dato del dia de antes
     #         while (l < ( 5+which(  Carga[k,1] == as.Date(colnames(T_Maestra)[6:length(T_Maestra)]) )) ) { 
     #             if( !is.na(Carga[k+1, 2]) ){ T_Maestra[i,l] <-  Carga[k+1, 2] }else{ T_Maestra[i,l] <-  Carga[k, 2] }
     #             l <- l + 1
@@ -704,7 +708,7 @@ for(i in 1:length(T_Maestra)){
 
 # Casos ----
 T_Con_Casos <- T_Pasada_A_Eur
-# añado columna para casos
+# a?ado columna para casos
 
 # ActualizaDatosNormales en excel Historico Altae final
 for(i in 1:nrow(T_Con_Casos)){
@@ -798,14 +802,14 @@ openxlsx::saveWorkbook(wb,file = "R:/RIESGOS/Procesos_Automaticos_Bankia/Hco_ACT
 # [[Bloomberg]]	Lo mantiene NOESIS con sus fuentes, principalmente BLOOMBERG
 # [[MAP fecha nombre]]	Mapeado desde la fecha indicada con los retornos del activo indicado en nombre
 # [[MAP fecha auto]]	Mapeado desde la fecha indicada con sus propios retornos
-# [[MAP continuo isin nombre]]	Mapeado sistemáticamente con el activo indicado en isin y nombre
+# [[MAP continuo isin nombre]]	Mapeado sistem?ticamente con el activo indicado en isin y nombre
 # [[Plano fecha]]	Cotiza plano desde la fecha indicada
-# [[CAMBIO fecha]]	Se produjo algún cambio en la fecha indicada, remitirse al comentario
+# [[CAMBIO fecha]]	Se produjo alg?n cambio en la fecha indicada, remitirse al comentario
 # [[COMENTARIO]]	Interesa que aparezca el comentario en el informe mensual a ALTAE
-# [[Repeticion]]	Se repite el último dato porque utiliza alguna fuente externa (VaR ALTAE para estructuras, por ejemplo)
-# [[MAP mixto isin1 porc1 isin2 porc2]]	Se crea un índice sintético usando porcentajes de dos ISIN presentes en la BBDD
-# [[Transformacion codigo]]	Se multiplica el dato empleado por una referencia (típicamente EURUSD para RF en dólares)
-# /High Yield/	Serán los activos con alta volatilidad
+# [[Repeticion]]	Se repite el ?ltimo dato porque utiliza alguna fuente externa (VaR ALTAE para estructuras, por ejemplo)
+# [[MAP mixto isin1 porc1 isin2 porc2]]	Se crea un ?ndice sint?tico usando porcentajes de dos ISIN presentes en la BBDD
+# [[Transformacion codigo]]	Se multiplica el dato empleado por una referencia (t?picamente EURUSD para RF en d?lares)
+# /High Yield/	Ser?n los activos con alta volatilidad
 
 
 
