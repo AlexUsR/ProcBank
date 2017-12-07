@@ -531,6 +531,29 @@ for(i in 1:nrow(VLP_temp)){ # cargo datos
 openxlsx::write.xlsx(VLP_Hco, file = "R:/RIESGOS/Procesos_Automaticos_Bankia/HistoricosFTP/VLP/VLP_Hco.xlsx",
                      sheetName = "Historico", colNames = TRUE)
 
+VLP_Hco[which(VLP_Hco$ISIN %in% c("ES0105578035",
+"ES0110544030",
+"ES0113256004",
+"ES0113385001",
+"ES0113385019",
+"ES0117184038",
+"ES0125726036",
+"ES0155921036",
+"ES0156980031",
+"ES0158013005",
+"ES0158965030",
+"ES0158971038",  
+"ES0158976037", 
+"ES0158986036", 
+"ES0159037037",
+"ES0159037045",
+"ES0159084039",
+"ES0159178005",
+"ES0159178039",
+"ES0171888037",
+"ES0185373034")),3] 
+
+
 # Carga en tabla
 for(i in 1:nrow(Tab)){
     if( length( which(VLP_Hco$ISIN %in% Tab$ISIN[i]) ) == 1 ){
