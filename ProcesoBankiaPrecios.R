@@ -273,10 +273,13 @@ CalendarioESP <- as.Date(CalendarioESP, origin = "1970-01-01")
 
 # junto las tablas del actpos e historicos para tener la tabla carga, y agrego las fechas nuevas que no estan en el historico
 ColumnsNuevas <-  which(as.character(CalendarioESP) %in% colnames(Histo)[4])-2
-merge.data.frame(ACTPOS$ISIN, Histo[,3:ncol(Histo)], by = "ISIN", all.x = T) -> TablaCarga 
+merge.data.frame( ACTPOS, Histo[,3:ncol(Histo)], by = "ISIN", all.x = T) -> TablaCarga 
 for(i in 1:ColumnsNuevas){
     TablaCarga[,ncol(TablaCarga)+1]<-NA
-    TablaCarga <- TablaCarga[,c(1,2,ncol(TablaCarga),3:ncol(TablaCarga)-1)]
+    TablaCarga <- TablaCarga[,c(1,2,ncol(TablaCarga),4:ncol(TablaCarga)-1)]
+    
+    colnames(TablaCarga)[3] <- as.character( CalendarioESP[ColumnsNuevas+2-i] )
+        
 }
 
 
